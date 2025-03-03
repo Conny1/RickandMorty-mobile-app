@@ -1,43 +1,67 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
-import { Platform } from 'react-native';
-
-import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { Tabs } from "expo-router";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { View, Text } from "react-native";
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
   return (
     <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+      screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
-        tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
-            position: 'absolute',
-          },
-          default: {},
-        }),
-      }}>
+        tabBarStyle: { backgroundColor: "#01afca", height: 55 },
+        tabBarIcon: ({ focused }) => {
+          let iconName: "movie-open" | "map-marker" | "account-supervisor" =
+            "account-supervisor";
+
+          if (route.name === "character") {
+            iconName = "account-supervisor";
+          } else if (route.name === "episodes") {
+            iconName = "movie-open";
+          } else if (route.name === "location") {
+            iconName = "map-marker";
+          }
+
+          return (
+            <View style={{ alignItems: "center" }}>
+              <MaterialCommunityIcons
+                name={iconName}
+                size={24}
+                color={`${focused ? "#fff" : "#75c8d6"}`}
+              />
+            </View>
+          );
+        },
+        tabBarShowLabel: true, // Show labels
+        tabBarLabelStyle: { fontSize: 12 }, // Customize label style
+      })}
+    >
       <Tabs.Screen
-        name="index"
+        name="character"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          tabBarLabel: ({ focused }) => (
+            <Text style={{ color: focused ? "#fff" : "#75c8d6" }}>
+              Characters
+            </Text>
+          ),
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="location"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          tabBarLabel: ({ focused }) => (
+            <Text style={{ color: focused ? "#fff" : "#75c8d6" }}>
+              Locations
+            </Text>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="episodes"
+        options={{
+          tabBarLabel: ({ focused }) => (
+            <Text style={{ color: focused ? "#fff" : "#75c8d6" }}>
+              Episodes
+            </Text>
+          ),
         }}
       />
     </Tabs>
