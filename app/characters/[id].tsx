@@ -1,11 +1,31 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
+import { characterType } from "@/types";
+import axios from "axios";
 
 const CharacterbyId = () => {
-  let url =
-    "https://images.thedirect.com/media/article_full/rick-morty-anime.jpg?imgeng=/cmpr_60/w_auto";
+  const params = useLocalSearchParams<{ id: string }>();
+  const [character, setcharacter] = useState<characterType>();
+  const fetchCharacters = async () => {
+    try {
+      const resp = await axios.get(
+        `${process.env.EXPO_PUBLIC_BASE_URL}/v1/character/${params.id}`
+      );
+      const data = resp.data;
+      if (data?.data) {
+        setcharacter(data.data);
+      }
+    } catch (error) {
+      console.log(error, "erorr");
+    }
+  };
+  useEffect(() => {
+    fetchCharacters();
+    // console.log("h dhdh", process.env.EXPO_PUBLIC_BASE_URL, characters);
+  }, []);
+
   const route = router;
   return (
     <View style={styles.main}>
@@ -20,7 +40,7 @@ const CharacterbyId = () => {
         <Image
           style={styles.imageStyle}
           source={{
-            uri: url,
+            uri: character?.image,
           }}
         />
       </View>
@@ -32,41 +52,41 @@ const CharacterbyId = () => {
           marginBottom: 10,
         }}
       >
-        Rick Sanchez
+        {character?.name}
       </Text>
       <View style={styles.detailsContainer}>
         <View style={styles.details}>
           <Text style={{ fontWeight: 500 }}>Status:</Text>
-          <Text>Alive</Text>
+          <Text>{character?.status}</Text>
         </View>
         {/*  */}
         <View style={styles.details}>
           <Text style={{ fontWeight: 500 }}> Species:</Text>
-          <Text>Human</Text>
+          <Text>{character?.species}</Text>
         </View>
 
         {/*  */}
         <View style={styles.details}>
           <Text style={{ fontWeight: 500 }}>Gender:</Text>
-          <Text>Male</Text>
+          <Text>{character?.gender}</Text>
         </View>
         {/*  */}
         <View style={styles.details}>
           <Text style={{ fontWeight: 500 }}>Origin:</Text>
-          <Text>Earth</Text>
+          <Text>{character?.origin.name}</Text>
         </View>
         {/*  */}
 
         <View style={styles.details}>
           <Text style={{ fontWeight: 500 }}>Location:</Text>
-          <Text>Earth</Text>
+          <Text>{character?.location.name}</Text>
         </View>
         {/*  */}
 
-        <View style={styles.details}>
+        {/* <View style={styles.details}>
           <Text style={{ fontWeight: 500 }}>First episode:</Text>
           <Text>Pilot</Text>
-        </View>
+        </View> */}
       </View>
     </View>
   );

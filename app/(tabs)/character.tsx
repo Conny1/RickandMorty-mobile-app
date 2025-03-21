@@ -1,15 +1,38 @@
 import {
+  FlatList,
+  SafeAreaView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { CharacterCard } from "../../components";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { characterType } from "@/types";
+import axios from "axios";
 
 const Character = () => {
+  const [characters, setcharacters] = useState<characterType[]>([]);
+  const fetchCharacters = async () => {
+    try {
+      const resp = await axios.get(
+        `${process.env.EXPO_PUBLIC_BASE_URL}/v1/character`
+      );
+      const data = resp.data;
+      if (data?.data?.results) {
+        setcharacters(data.data.results);
+      }
+    } catch (error) {
+      console.log(error, "erorr");
+    }
+  };
+  useEffect(() => {
+    fetchCharacters();
+    // console.log("h dhdh", process.env.EXPO_PUBLIC_BASE_URL, characters);
+  }, []);
+
   return (
     <View style={styles.parent}>
       <View style={styles.searchcontainer}>
@@ -23,22 +46,15 @@ const Character = () => {
         </TouchableOpacity>
       </View>
 
-      <View
-        style={{
-          flexDirection: "row",
-          flexWrap: "wrap",
-          justifyContent: "space-evenly",
-        }}
-      >
-        <CharacterCard />
-        <CharacterCard />
-        <CharacterCard />
-        <CharacterCard />
-        <CharacterCard />
-        <CharacterCard />
-        <CharacterCard />
-        <CharacterCard />
-      </View>
+      <SafeAreaView style={styles.scrollContainer}>
+        <FlatList
+          data={characters}
+          renderItem={CharacterCard}
+          keyExtractor={(item) => item.id.toString()}
+          numColumns={2}
+          columnWrapperStyle={styles.row}
+        />
+      </SafeAreaView>
     </View>
   );
 };
@@ -49,6 +65,15 @@ const styles = StyleSheet.create({
   parent: {
     margin: 10,
   },
+  scrollContainer: {
+    marginBottom: 150,
+  },
+  row: {
+    justifyContent: "space-evenly", // Distributes cards evenly across the row
+    marginBottom: 10,
+    gap: 3,
+  },
+
   searchcontainer: {
     flexDirection: "row",
     alignItems: "center",

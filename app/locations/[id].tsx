@@ -1,12 +1,43 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React from "react";
+import {
+  FlatList,
+  Image,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import React, { useEffect, useState } from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
+import { characterType, locationType } from "@/types";
+import axios from "axios";
 
 const LocationbyId = () => {
+  const params = useLocalSearchParams<{ id: string }>();
+
   let url =
     "https://images.thedirect.com/media/article_full/rick-morty-anime.jpg?imgeng=/cmpr_60/w_auto";
+
   const route = router;
+  const [location, setlocation] = useState<locationType>();
+  const fetchlocations = async () => {
+    try {
+      const resp = await axios.get(
+        `${process.env.EXPO_PUBLIC_BASE_URL}/v1/location/${params.id}`
+      );
+      const data = resp.data;
+      if (data?.data) {
+        setlocation(data.data);
+      }
+    } catch (error) {
+      console.log(error, "erorr");
+    }
+  };
+  useEffect(() => {
+    fetchlocations();
+    // console.log("h dhdh", process.env.EXPO_PUBLIC_BASE_URL, characters);
+  }, []);
   return (
     <View style={styles.main}>
       <TouchableOpacity
@@ -34,12 +65,12 @@ const LocationbyId = () => {
           color: "#01afca",
         }}
       >
-        Earth
+        {location?.name}
       </Text>
       <View style={styles.detailsContainer}>
         <View style={styles.details}>
           <Text style={{ fontWeight: 500, color: "#e697c6" }}>Type:</Text>
-          <Text style={{ color: "#93c242" }}>Planet</Text>
+          <Text style={{ color: "#93c242" }}>{location?.type}</Text>
         </View>
         {/*  */}
         <View style={styles.details}>
@@ -53,7 +84,7 @@ const LocationbyId = () => {
         {/*  */}
         <View style={styles.details}>
           <Text style={{ fontWeight: 500, color: "#e697c6" }}>Dimension:</Text>
-          <Text style={{ color: "#93c242" }}>Dimension C-137</Text>
+          <Text style={{ color: "#93c242" }}>{location?.dimension}</Text>
         </View>
       </View>
       <Text
@@ -66,45 +97,28 @@ const LocationbyId = () => {
       >
         Residents:
       </Text>
-      <View style={styles.residents}>
-        <TouchableOpacity style={{ width: 70, height: 80 }}>
-          <Image
-            style={styles.imageStyle}
-            source={{
-              uri: url,
-            }}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity style={{ width: 70, height: 80 }}>
-          <Image
-            style={styles.imageStyle}
-            source={{
-              uri: url,
-            }}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity style={{ width: 70, height: 80 }}>
-          <Image
-            style={styles.imageStyle}
-            source={{
-              uri: url,
-            }}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            router.push("/characters/123");
+      <SafeAreaView>
+        <FlatList
+          data={location?.residents}
+          horizontal={true}
+          renderItem={({ item }) => {
+            return (
+              <TouchableOpacity
+                onPress={() => route.push(`/characters/${item.id}`)}
+                style={{ width: 70, height: 80, marginRight: 10 }}
+              >
+                <Image
+                  style={styles.imageStyle}
+                  source={{
+                    uri: item.image,
+                  }}
+                />
+              </TouchableOpacity>
+            );
           }}
-          style={{ width: 70, height: 80 }}
-        >
-          <Image
-            style={styles.imageStyle}
-            source={{
-              uri: url,
-            }}
-          />
-        </TouchableOpacity>
-      </View>
+          keyExtractor={(item) => item.id.toString()}
+        />
+      </SafeAreaView>
     </View>
   );
 };

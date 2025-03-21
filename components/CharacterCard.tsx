@@ -1,14 +1,17 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import { router } from "expo-router";
+import { characterType } from "@/types";
 
-const CharacterCard = () => {
-  let url =
-    "https://images.thedirect.com/media/article_full/rick-morty-anime.jpg?imgeng=/cmpr_60/w_auto";
+type Props = {
+  item: characterType;
+};
+const CharacterCard = ({ item }: Props) => {
+  let url = item.image;
   return (
     <TouchableOpacity
       onPress={() => {
-        router.push("/characters/123");
+        router.push(`/characters/${item.id}`);
       }}
       style={styles.parent}
     >
@@ -19,8 +22,10 @@ const CharacterCard = () => {
         }}
       />
       <View>
-        <Text style={{ fontWeight: 700 }}>Rick Sanchez</Text>
-        <Text style={{ fontSize: 10, textAlign: "center" }}>Human,Alive</Text>
+        <Text style={{ fontWeight: 700 }}>{item.name}</Text>
+        <Text style={{ fontSize: 10, textAlign: "center" }}>
+          {item.species},{item.status}
+        </Text>
       </View>
     </TouchableOpacity>
   );
