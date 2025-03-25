@@ -14,7 +14,17 @@ export type characterType = {
     url: string;
   };
   image: string;
-  episode: [string];
+  episode: episodesType[];
+  url: string;
+  created: string;
+};
+
+export type episodesType = {
+  id: number;
+  name: string;
+  air_date: string;
+  episode: string;
+  characters: characterType[];
   url: string;
   created: string;
 };

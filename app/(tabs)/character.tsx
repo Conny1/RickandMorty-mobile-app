@@ -107,6 +107,7 @@ const Character = () => {
           keyExtractor={(item) => item.id.toString()}
           numColumns={2}
           columnWrapperStyle={styles.row}
+          initialNumToRender={10}
           onEndReached={fetchCharacters}
           onEndReachedThreshold={0.5}
           ListFooterComponent={

@@ -44,7 +44,7 @@ export default function TabLayout() {
           ),
         }}
       />
-      <Tabs.Screen
+      {/* <Tabs.Screen
         name="location"
         options={{
           tabBarLabel: ({ focused }) => (
@@ -63,7 +63,7 @@ export default function TabLayout() {
             </Text>
           ),
         }}
-      />
+      /> */}
     </Tabs>
   );
 }
